@@ -148,6 +148,8 @@ public class HospitalMainActivity extends AppCompatActivity implements View.OnCl
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.questin_layout:
+                Intent chatIntent = new Intent(this,HospitalDynamicActivity.class);
+                startActivity(chatIntent);
                 break;
             case R.id.dynamic_layout:
                 Intent intent = new Intent(this,HospitalDynamicActivity.class);

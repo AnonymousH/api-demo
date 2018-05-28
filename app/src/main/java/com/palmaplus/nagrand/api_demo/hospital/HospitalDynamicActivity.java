@@ -205,6 +205,12 @@ public class HospitalDynamicActivity extends AppCompatActivity {
         mapView.drop();
     }
 
+    @Override
+    public void onBackPressed() {
+
+        super.onBackPressed();
+    }
+
     private void performclick() {
         final int width = getWindowManager().getDefaultDisplay().getWidth();
         final int height = getWindowManager().getDefaultDisplay().getHeight();
