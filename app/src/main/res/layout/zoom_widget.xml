@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="36dp"
+              android:layout_height="wrap_content"
+              android:background="@drawable/zoom_bg"
+              android:orientation="vertical"
+              android:translationZ="10dp">
+    <ImageView
+        android:id="@+id/zoom_in"
+        android:layout_width="36dp"
+        android:layout_height="26dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="4dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/btn_zoomin"/>
+
+    <View
+        android:layout_width="26dp"
+        android:layout_height="1px"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="5dp"
+        android:background="#696969"/>
+
+    <ImageView
+        android:id="@+id/zoom_out"
+        android:layout_width="26dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center_horizontal"
+        android:scaleType="centerInside"
+        android:src="@drawable/btn_zoomout"/>
+
+</LinearLayout>

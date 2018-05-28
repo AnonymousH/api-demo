@@ -1,0 +1,54 @@
+apply plugin: 'com.android.application'
+apply plugin: 'bugly'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    defaultConfig {
+        applicationId "com.palmaplus.nagrand.api_demo"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+        ndk {
+            abiFilters 'armeabi', 'x86'
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+}
+
+bugly {
+    appId = "c53b8df309"
+    appKey = "ea4706a5-d986-4627-8c05-c73074408eab"
+}
+
+dependencies {
+    compile project(':baiduasr')
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile files('libs/nagrand-jar-with-dependencies.jar')
+    // android suport
+    compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
+    compile "com.android.support.constraint:constraint-layout:$rootProject.constraintLayoutVersion"
+    // bugly
+    compile 'com.tencent.bugly:crashreport:latest.release'
+    compile 'com.tencent.bugly:nativecrashreport:latest.release'
+    // rx
+    //    compile "io.reactivex.rxjava2:rxandroid:$rootProject.rxAndroidVersion"
+    //    compile "io.reactivex.rxjava2:rxjava:$rootProject.rxJavaVersion"
+    compile files('libs/com.baidu.tts_2.3.1.20170808_e39ea89.jar')
+
+    compile 'com.squareup.okhttp3:okhttp:3.6.0'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+
+}

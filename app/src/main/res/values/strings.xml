@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">api-demo</string>
+    <string name="rotate">旋转</string>
+    <string name="skew">俯仰</string>
+    <string name="move">移动</string>
+    <string name="scale">缩放</string>
+    <string name="click">点击</string>
+
+</resources>
