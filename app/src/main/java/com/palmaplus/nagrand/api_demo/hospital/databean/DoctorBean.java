@@ -6,10 +6,19 @@ package com.palmaplus.nagrand.api_demo.hospital.databean;
 
 public class DoctorBean {
 
+    private boolean isSelect;
     private int headImg;
     private String name;
     private String title;
     private String good;
+
+    public boolean isSelect() {
+        return isSelect;
+    }
+
+    public void setSelect(boolean select) {
+        isSelect = select;
+    }
 
     public String getGood() {
         return good;

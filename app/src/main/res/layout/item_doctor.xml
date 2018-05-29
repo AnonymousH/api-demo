@@ -3,39 +3,40 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
-    android:paddingLeft="40dp"
-    android:paddingBottom="15dp"
-    android:paddingTop="15dp"
-    android:orientation="horizontal">
+    android:id="@+id/item_doctor_bg"
+    android:orientation="horizontal"
+    android:paddingBottom="35px"
+    android:paddingLeft="80px"
+    android:paddingTop="35px">
 
 
     <ImageView
         android:id="@+id/item_doctor_head"
-        android:layout_width="75dp"
-        android:layout_height="75dp" />
+        android:layout_width="130px"
+        android:layout_height="130px" />
 
     <LinearLayout
-        android:layout_marginLeft="15dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="30px"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/item_doctor_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="1111"
             android:textColor="#333333"
-            android:textSize="18sp"
-            android:text="1111" />
+            android:textSize="36px" />
 
         <TextView
-            android:layout_marginTop="10dp"
             android:id="@+id/item_doctor_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
+            android:layout_marginTop="24px"
+            android:text="1111"
             android:textColor="#666666"
-            android:text="1111" />
+            android:textSize="32px" />
 
     </LinearLayout>
 

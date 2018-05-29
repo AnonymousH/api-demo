@@ -1,16 +1,24 @@
 package com.palmaplus.nagrand.api_demo.hospital;
 
+import android.Manifest;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baidu.aip.unit.Init;
@@ -20,9 +28,18 @@ import com.baidu.android.voicedemo.recognization.ChainRecogListener;
 import com.baidu.android.voicedemo.recognization.CommonRecogParams;
 import com.baidu.android.voicedemo.recognization.RecogResult;
 import com.baidu.android.voicedemo.recognization.online.OnlineRecogParams;
+import com.baidu.tts.client.SpeechSynthesizer;
+import com.baidu.tts.client.TtsMode;
+import com.baidu.tts.sample.control.InitConfig;
 import com.baidu.tts.sample.control.MySyntherizer;
+import com.baidu.tts.sample.control.NonBlockSyntherizer;
+import com.baidu.tts.sample.listener.MessageListener;
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.palmaplus.nagrand.api_demo.R;
+import com.palmaplus.nagrand.api_demo.hospital.adapter.FloorAdapter;
+import com.palmaplus.nagrand.api_demo.hospital.databean.FloorBean;
 import com.palmaplus.nagrand.api_demo.utils.Constants;
+import com.palmaplus.nagrand.api_demo.utils.DataUtil;
 import com.palmaplus.nagrand.api_demo.utils.JsonUtil;
 import com.palmaplus.nagrand.core.Types;
 import com.palmaplus.nagrand.data.FeatureCollection;
@@ -38,10 +55,14 @@ import com.palmaplus.nagrand.view.overlay.ImageOverlay;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class HospitalDynamicActivity extends AppCompatActivity {
 
+    private FloorAdapter floorAdapter;
+    private RecyclerView floor_recycle;
+    private TextView floor_txt;
     private Button voice_button;
     private int voiceState = 0;
 
@@ -69,6 +90,8 @@ public class HospitalDynamicActivity extends AppCompatActivity {
                 case 1:
                     performclick();
                     break;
+                case 2:
+                    break;
             }
         }
     };
@@ -90,7 +113,81 @@ public class HospitalDynamicActivity extends AppCompatActivity {
         init();
     }
 
+    protected java.util.Map<String, String> getParams() {
+        java.util.Map<String, String> params = new HashMap<String, String>();
+        // 以下参数均为选填
+        // 设置在线发声音人： 0 普通女声（默认） 1 普通男声 2 特别男声 3 情感男声<度逍遥> 4 情感儿童声<度丫丫>
+        params.put(SpeechSynthesizer.PARAM_SPEAKER, "0");
+        // 设置合成的音量，0-9 ，默认 5
+        params.put(SpeechSynthesizer.PARAM_VOLUME, "9");
+        // 设置合成的语速，0-9 ，默认 5
+        params.put(SpeechSynthesizer.PARAM_SPEED, "5");
+        // 设置合成的语调，0-9 ，默认 5
+        params.put(SpeechSynthesizer.PARAM_PITCH, "5");
+
+        return params;
+    }
+
+    private void initPermission() {
+        String[] permissions = {
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.ACCESS_NETWORK_STATE,
+                Manifest.permission.INTERNET,
+                Manifest.permission.READ_PHONE_STATE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+        };
+
+        ArrayList<String> toApplyList = new ArrayList<String>();
+
+        for (String perm : permissions) {
+            if (PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(this, perm)) {
+                toApplyList.add(perm);
+                // 进入到这里代表没有权限.
+
+            }
+        }
+        String[] tmpList = new String[toApplyList.size()];
+        if (!toApplyList.isEmpty()) {
+            ActivityCompat.requestPermissions(this, toApplyList.toArray(tmpList), 123);
+        }
+
+    }
+
+    protected void initialTts() {
+//        LoggerProxy.printable(true); // 日志打印在logcat中
+        // 设置初始化参数
+        // 此处可以改为 含有您业务逻辑的SpeechSynthesizerListener的实现类
+        final MessageListener listener = new MessageListener();
+        listener.setCallback(new MessageListener.FinishCallback() {
+            @Override
+            public void callback() {
+                Log.e("test", "callback");
+//                listen();
+            }
+        });
+        java.util.Map<String, String> params = getParams();
+
+
+        // appId appKey secretKey 网站上您申请的应用获取。注意使用离线合成功能的话，需要应用中填写您app的包名。包名在build.gradle中获取。
+        InitConfig initConfig = new InitConfig(appId, appKey, secretKey, ttsMode, params, listener);
+
+        Init.synthesizer = NonBlockSyntherizer.getInstance(this, initConfig, handler);
+    }
+
+    protected String appId = "11222818";
+
+    protected String appKey = "QID1SOTBb9e70yWoIVWBnmTe";
+
+    protected String secretKey = "2PalQ9mk9ViSGAcfaTMM0bvV17g7CI5R";
+
+    // TtsMode.MIX; 离在线融合，在线优先； TtsMode.ONLINE 纯在线； 没有纯离线
+    protected TtsMode ttsMode = TtsMode.ONLINE;
+
     private void init() {
+        initPermission();
+
+        initialTts();
+
         listener = new ChainRecogListener();
         listener.addListener(new MyListener(handler) {
             @Override
@@ -155,6 +252,37 @@ public class HospitalDynamicActivity extends AppCompatActivity {
 
     private void initView() {
 
+        floor_txt = (TextView) findViewById(R.id.floor_txt);
+        floor_txt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(floor_recycle.getVisibility() == View.GONE){
+                    floor_recycle.setVisibility(View.VISIBLE);
+                }else {
+                    floor_recycle.setVisibility(View.GONE);
+                }
+            }
+        });
+        floor_recycle = (RecyclerView) findViewById(R.id.floor_recycle);
+        final List<FloorBean> floorBeans = DataUtil.getFloorData();
+        floorAdapter = new FloorAdapter();
+        floor_recycle.setLayoutManager(new LinearLayoutManager(this));
+        floor_recycle.setAdapter(floorAdapter);
+        floorAdapter.setNewData(floorBeans);
+        floorAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                if(TextUtils.equals(floor_txt.getText().toString(),floorBeans.get(position).getFloorName())){
+                    return;
+                }
+
+                floor_recycle.setVisibility(View.GONE);
+                floor_txt.setText(floorBeans.get(position).getFloorName());
+                map.switchMapWithID(floorBeans.get(position).getFloorID());
+            }
+        });
+
+
         voice_button = (Button) findViewById(R.id.voice_button);
         voice_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -171,6 +299,7 @@ public class HospitalDynamicActivity extends AppCompatActivity {
                     Log.i("FCS", "--------myRecognizer.stop();------------------");
                     voiceState = 0;
                 }
+
             }
         });
 
@@ -184,7 +313,7 @@ public class HospitalDynamicActivity extends AppCompatActivity {
         // 获取放置Widget的ViewGroup
         RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.control_container);
         // 将Widgets放入ViewGroup中
-        map.setDefaultWidgetContrainer(relativeLayout);
+//        map.setDefaultWidgetContrainer(relativeLayout);
         // 隐藏指南针
         map.getCompass().setVisibility(View.GONE);
         // 隐藏比例尺
@@ -204,7 +333,9 @@ public class HospitalDynamicActivity extends AppCompatActivity {
                 switch (state) {
                     case 0:
                         // 清除地图上的导航线
-                        lbsManager.getNaviLayer().clearFeatures();
+                        if(lbsManager!=null && lbsManager.getNaviLayer()!=null){
+                            lbsManager.getNaviLayer().clearFeatures();
+                        }
                         // 设置点击的区域为起点
 //                        startOverlay.init(new double[] { point.x, point.y });
 //                        startOverlay.mFloorId = map.getFloorId();

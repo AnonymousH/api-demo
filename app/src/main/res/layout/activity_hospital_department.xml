@@ -75,17 +75,17 @@
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler1"
-            android:background="#F2F2F2"
             android:layout_width="480px"
-            android:layout_height="match_parent">
-        </android.support.v7.widget.RecyclerView>
+            android:layout_height="match_parent"
+            android:background="#F2F2F2"></android.support.v7.widget.RecyclerView>
 
-       <android.support.v7.widget.RecyclerView
+        <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler2"
             android:layout_width="match_parent"
-           android:background="#FFFFFF"
-            android:layout_height="match_parent">
-        </android.support.v7.widget.RecyclerView>
+            android:layout_height="match_parent"
+            android:background="#FFFFFF"
+            android:paddingLeft="25px"
+            android:paddingTop="25px"></android.support.v7.widget.RecyclerView>
 
     </LinearLayout>
 

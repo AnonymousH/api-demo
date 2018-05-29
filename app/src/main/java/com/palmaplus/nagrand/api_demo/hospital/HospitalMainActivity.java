@@ -70,7 +70,7 @@ public class HospitalMainActivity extends AutoLayoutActivity implements View.OnC
 
         initView();
 
-        init();
+//        init();
     }
 
     private void init() {
@@ -175,10 +175,12 @@ public class HospitalMainActivity extends AutoLayoutActivity implements View.OnC
                 break;
             case R.id.register_layout:
                 Intent register = new Intent(this, DepartmentActivity.class);
+                register.putExtra("type",1);
                 startActivity(register);
                 break;
             case R.id.appoint_layout:
-                Intent appoint = new Intent(this, AppointmentActivity.class);
+                Intent appoint = new Intent(this, DepartmentActivity.class);
+                appoint.putExtra("type",2);
                 startActivity(appoint);
                 break;
             default:

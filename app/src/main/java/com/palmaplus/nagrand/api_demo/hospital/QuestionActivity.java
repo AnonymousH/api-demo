@@ -54,6 +54,10 @@ import java.util.Map;
 
 public class QuestionActivity extends AppCompatActivity {
 
+
+
+    static final int click_to_error_or_final = 1;
+
     private List<Msg> mMsgs;
     private MsgDaoUtil mMsgDaoUtil;
     private ChatAdapter mAdapter;
@@ -85,19 +89,14 @@ public class QuestionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question);
 //        ButterKnife.bind(this);
-        //http初始化
-        TLAPIService.getInstance().init(this);
 
-        //语音引擎初始化
-        init();
+
+        TLAPIService.getInstance().init(this);
 
         initView();
 
         mMsgDaoUtil = new MsgDaoUtil(this);
-
-//        mMsgs = mMsgDaoUtil.queryAllMsg();
         mMsgs = new ArrayList<>();
-
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mRvChatList.setLayoutManager(linearLayoutManager);
         mAdapter = new ChatAdapter(this, mMsgs);
@@ -107,7 +106,9 @@ public class QuestionActivity extends AppCompatActivity {
         mMsgDaoUtil.setUpdateListener(new OnDbUpdateListener() {
             @Override
             public void onUpdate(Msg msg) {
+                Log.w("textinsert","insert");
                 mAdapter.addItem(msg);
+//                mAdapter.
                 mRvChatList.scrollToPosition(mAdapter.getItemCount() - 1);
             }
         });
@@ -123,8 +124,10 @@ public class QuestionActivity extends AppCompatActivity {
             }
         });
 
+        //语音引擎初始化
+        init();
         handler.postDelayed(runnable, 300);
-//        handler.sendMessage()
+
     }
 
     private boolean addMsg(Msg msg) {
@@ -155,8 +158,12 @@ public class QuestionActivity extends AppCompatActivity {
 
     }
 
+    int viewClick = 0;
     public void onViewClicked() {
         String content = mEtContent.getText().toString();
+        viewClick = click_to_error_or_final;
+        syntherizer.stop();
+        stopListen();
         addMsg(new Msg(null, content, Msg.TYPE_PHONE, df.format(new Date())));
         answer(content);
         mEtContent.setText("");
@@ -170,18 +177,10 @@ public class QuestionActivity extends AppCompatActivity {
 
 
     public void onVoiceClicked() {
-        Log.i("YY","--------------onVoiceClicked()-----------");
-        if(say_status == status_no_saying){
-            myRecognizer.start(params);
-            bt_voice_send.setText("正在录音");
-            say_status = status_saying;
-        }else if(say_status == status_saying){
-            myRecognizer.stop();
-            bt_voice_send.setText("开始录音");
-            say_status = status_no_saying;
-        }else if(say_status == 2){
-
-        }
+        syntherizer.stop();
+        Log.w("yuyin","in click kaishi luyin : " + islitening);
+        listen();
+        viewClick = 0;
     }
 
     private void answer(String question){
@@ -214,17 +213,13 @@ public class QuestionActivity extends AppCompatActivity {
         syntherizer.release();
     }
 
-
     //语音部分
-
     private void init(){
         initPermission();
         initRecog();
         initialTts();
         syntherizer = Init.synthesizer;
     }
-
-
 
     //语音识别参数
     protected CommonRecogParams apiParams;
@@ -235,19 +230,17 @@ public class QuestionActivity extends AppCompatActivity {
     protected Map<String,Object> params;
 
 
+    IRecogListener listener0;
     //识别引擎初始化
     protected void initRecog() {
-//        StatusRecogListener listener = new MessageStatusRecogListener(handler);
+//        listener0 = new MyListener(handler);
         listener = new ChainRecogListener();
         listener.addListener(new MyListener(handler));
         myRecognizer = new MyRecognizer(this, listener);
+//        myRecognizer.registerListener(listener);
         apiParams = getApiParams();
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         params = apiParams.fetch(sp);
-//        status = STATUS_NONE;
-//        if (enableOffline) {
-//            myRecognizer.loadOfflineEngine(OfflineRecogParams.fetchOfflineParams());
-//        }
     }
     protected CommonRecogParams getApiParams() {
         return new OnlineRecogParams(this);
@@ -357,13 +350,14 @@ public class QuestionActivity extends AppCompatActivity {
             }
             speechEndTime = 0;
             sendMessage(message, status, true);
-            Log.w("speak",message);
+            Log.w("yuyin",message);
 
 
-            say_status = status_no_saying;
-            bt_voice_send.setText("开始录音");
+//            if(viewClick != click_to_error_or_final) {
+            stopListen();
             addMsg(new Msg(null, results[0], Msg.TYPE_PHONE, df.format(new Date())));
             answer(results[0]);
+//            }
 
         }
 
@@ -379,7 +373,9 @@ public class QuestionActivity extends AppCompatActivity {
             speechEndTime = 0;
             sendMessage(message, status, true);
             speechEndTime = 0;
-
+            Log.w("yuyin","in error kaishi luyin");
+            if(viewClick != click_to_error_or_final)
+                myRecognizer.start(params);
         }
 
         @Override
@@ -469,15 +465,32 @@ public class QuestionActivity extends AppCompatActivity {
             @Override
             public void callback() {
                 Log.e("test","callback");
+                Log.w("yuyin","int call back kaishi luyin");
+                viewClick = 0;
+                listen();
+                islitening = true;
             }
+
         });
         Map<String, String> params = getParams();
+
 
 
         // appId appKey secretKey 网站上您申请的应用获取。注意使用离线合成功能的话，需要应用中填写您app的包名。包名在build.gradle中获取。
         InitConfig initConfig = new InitConfig(appId, appKey, secretKey, ttsMode, params, listener);
 
         Init.synthesizer = NonBlockSyntherizer.getInstance(this,initConfig,mainHandler);
+    }
+    boolean islitening = false;
+    void listen(){
+        if(!islitening) {
+            myRecognizer.start(params);
+            islitening = true;
+        }
+    }
+    void stopListen(){
+        myRecognizer.cancel();
+        islitening = false;
     }
     int i = 0;
     int ready = 0;
@@ -487,7 +500,7 @@ public class QuestionActivity extends AppCompatActivity {
 
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            if (msg.what == 0){
+            if (msg.what == 2){
                 if(i == 0 ) syntherizer.speak("请问有什么问题需要咨询?聊聊天也行啊!");
                 Log.w("speak", ""+(++i));
                 ready = 1;

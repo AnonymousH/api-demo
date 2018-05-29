@@ -2,153 +2,285 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv"
-        android:layout_width="250dp"
-        android:layout_height="match_parent"
-        android:background="#F2F2F2" />
+    android:background="#05246A"
+    android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_weight="2"
-        android:orientation="vertical"
-        android:paddingLeft="50dp"
-        android:paddingRight="50dp"
-        android:paddingTop="20dp">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
-
-            <ImageView
-                android:id="@+id/main_head"
-                android:layout_width="80dp"
-                android:layout_height="80dp" />
-
-            <TextView
-                android:id="@+id/main_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/main_good"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:textColor="#333333"
-                android:textSize="18sp" />
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:text="门诊时间:" />
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="717px"
+            android:layout_height="131px"
+            android:background="@mipmap/time_bg"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_weight="1"
+            <TextClock
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center_horizontal"
-                >
+                android:layout_marginLeft="50px"
+                android:format24Hour="HH:mm"
+                android:text="15:30"
+                android:textColor="#FFFFFF"
+                android:textSize="48px" />
 
-                <TextView
-                    android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/date_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20px"
+                android:text="2017年05月28日 星期一"
+                android:textColor="#FFFFFF"
+                android:textSize="36px" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="449px"
+            android:layout_height="100px"
+            android:layout_marginRight="50px"
+            android:layout_marginTop="31px"
+            android:src="@mipmap/llogo" />
+
+        <ImageView
+            android:id="@+id/icon_main"
+            android:layout_width="280px"
+            android:layout_height="100px"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="50px"
+            android:layout_marginTop="31px"
+            android:src="@mipmap/icon_main" />
+
+        <ImageView
+            android:id="@+id/icon_last"
+            android:layout_width="280px"
+            android:layout_height="100px"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="50px"
+            android:layout_marginTop="31px"
+            android:src="@mipmap/icon_last" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="50px"
+        android:layout_marginLeft="70px"
+        android:layout_marginRight="70px"
+        android:layout_marginTop="50px"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="643px"
+            android:layout_height="match_parent"
+            android:background="#F2F2F2"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/appoint_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="08:00-11:00"
-                    android:textColor="#333333"
-                    android:textSize="20sp"
-                    android:layout_marginTop="10dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingBottom="30px"
+                    android:paddingLeft="30px"
+                    android:paddingTop="30px">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="36px"
+                        android:textColor="#333333"
+                        android:text="预约时间:" />
+
+                    <LinearLayout
+                        android:id="@+id/date_select_layout"
+                        android:layout_width="403px"
+                        android:layout_height="84px"
+                        android:layout_marginLeft="30px"
+                        android:background="@drawable/appoint_shape"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="05-30 星期三"
+                            android:textColor="#333333"
+                            android:textSize="36px" />
+
+                        <ImageView
+                            android:layout_width="33px"
+                            android:layout_height="20px"
+                            android:layout_marginLeft="30px"
+                            android:src="@mipmap/arrow_down" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2px"
+                    android:background="#CCCCCC"
+
                     />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="¥30.00"
-                    android:textColor="#D43C33"
-                    android:textSize="18sp"
-                    android:layout_marginTop="10dp"
-                    />
-
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="挂号"
-                    android:textColor="#FFFFFF"
-                    android:paddingLeft="30dp"
-                    android:paddingRight="30dp"
-                    android:paddingTop="15dp"
-                    android:layout_marginTop="20dp"
-                    android:paddingBottom="15dp"
-                    android:background="@drawable/guahao"
-                    />
-
             </LinearLayout>
 
-            <View
-                android:layout_width="1dp"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv"
+                android:layout_width="643px"
                 android:layout_height="match_parent"
-                android:background="#CCCCCC"
-                />
+                android:background="#F2F2F2" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:background="#FFFFFF"
+            android:orientation="vertical"
+            android:paddingTop="35px">
 
             <LinearLayout
-                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingLeft="105px"
+                android:paddingRight="105px">
+
+                <ImageView
+                    android:id="@+id/main_head"
+                    android:layout_width="150px"
+                    android:layout_height="150px"
+                    android:src="@mipmap/doctor1" />
+
+                <TextView
+                    android:id="@+id/main_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10px"
+                    android:text="aaaaa"
+                    android:textColor="#333333"
+                    android:textSize="36px" />
+
+                <TextView
+                    android:id="@+id/main_good"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10px"
+                    android:text="擅长：子宫颈癌前病变、子宫颈LEEP术、早期子宫颈癌及高危HPV感染的诊治"
+                    android:textColor="#333333"
+                    android:textSize="36px" />
+            </LinearLayout>
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center_horizontal"
-                >
+                android:layout_marginLeft="105px"
+                android:layout_marginTop="51px"
+                android:text="门诊时间:"
+                android:textColor="#666666"
+                android:textSize="36px" />
 
-                <TextView
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="14:00-16:30"
-                    android:textColor="#333333"
-                    android:textSize="20sp"
-                    android:layout_marginTop="10dp"
-                    />
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
 
-                <TextView
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="08:00-11:00"
+                        android:textColor="#333333"
+                        android:textSize="54px" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10px"
+                        android:text="¥30.00"
+                        android:textColor="#D43C33"
+                        android:textSize="44px" />
+
+
+                    <TextView
+                        android:id="@+id/morning"
+                        android:layout_width="360px"
+                        android:layout_height="120px"
+                        android:layout_marginTop="15px"
+                        android:background="@drawable/guahao"
+                        android:gravity="center"
+                        android:text="挂号"
+                        android:textColor="#FFFFFF"
+                        android:textSize="54px" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="#CCCCCC" />
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="¥30.00"
-                    android:textColor="#D43C33"
-                    android:textSize="18sp"
-                    android:layout_marginTop="10dp"
-                    />
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="14:00-16:30"
+                        android:textColor="#333333"
+                        android:textSize="54px" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="¥30.00"
+                        android:textColor="#D43C33"
+                        android:textSize="44px" />
 
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="挂号"
-                    android:textColor="#FFFFFF"
-                    android:paddingLeft="30dp"
-                    android:paddingRight="30dp"
-                    android:paddingTop="15dp"
-                    android:layout_marginTop="20dp"
-                    android:paddingBottom="15dp"
-                    android:background="@drawable/guahao_gray"
-                    />
+                    <TextView
+                        android:id="@+id/afternoon"
+                        android:layout_width="360px"
+                        android:layout_height="120px"
+                        android:layout_marginTop="15px"
+                        android:background="@drawable/guahao_gray"
+                        android:gravity="center"
+                        android:text="挂号"
+                        android:textColor="#FFFFFF"
+                        android:textSize="54px" />
 
+                </LinearLayout>
             </LinearLayout>
+
         </LinearLayout>
 
     </LinearLayout>
+
 
 </LinearLayout>
