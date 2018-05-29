@@ -7,11 +7,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.baidu.aip.unit.Init;
 import com.baidu.tts.client.SpeechSynthesizer;
@@ -20,17 +20,25 @@ import com.baidu.tts.sample.control.InitConfig;
 import com.baidu.tts.sample.control.NonBlockSyntherizer;
 import com.baidu.tts.sample.listener.MessageListener;
 import com.palmaplus.nagrand.api_demo.R;
+import com.palmaplus.nagrand.api_demo.utils.DateUtil;
+import com.zhy.autolayout.AutoLayoutActivity;
 
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HospitalMainActivity extends AppCompatActivity implements View.OnClickListener{
+public class HospitalMainActivity extends AutoLayoutActivity implements View.OnClickListener {
 
     LinearLayout questinLayout;
     LinearLayout dynamicLayout;
-    LinearLayout printerLayout;
+        LinearLayout register_layout;
     LinearLayout appointLayout;
+
+    private TextView dateText;
 
 
     protected String appId = "11222818";
@@ -133,31 +141,45 @@ public class HospitalMainActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void initView() {
+        dateText = (TextView) findViewById(R.id.date_text);
+        setDate();
+
         questinLayout = (LinearLayout) findViewById(R.id.questin_layout);
         questinLayout.setOnClickListener(this);
         dynamicLayout = (LinearLayout) findViewById(R.id.dynamic_layout);
         dynamicLayout.setOnClickListener(this);
-        printerLayout = (LinearLayout) findViewById(R.id.printer_parent);
-        printerLayout.setOnClickListener(this);
+        register_layout = (LinearLayout) findViewById(R.id.register_layout);
+        register_layout.setOnClickListener(this);
         appointLayout = (LinearLayout) findViewById(R.id.appoint_layout);
         appointLayout.setOnClickListener(this);
 
     }
 
+    private void setDate() {
+        //new日期对象
+        Date date = new Date(System.currentTimeMillis());
+        dateText.setText(DateUtil.parseDateToStr(date, DateUtil.DATE_TIME_FORMAT_YYYY年MM月DD日) + " " + DateUtil.getDayWeekOfDate1(date));
+    }
+
+
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.questin_layout:
-                Intent chatIntent = new Intent(this,HospitalDynamicActivity.class);
+                Intent chatIntent = new Intent(this, QuestionActivity.class);
                 startActivity(chatIntent);
                 break;
             case R.id.dynamic_layout:
-                Intent intent = new Intent(this,HospitalDynamicActivity.class);
+                Intent intent = new Intent(this, HospitalDynamicActivity.class);
                 startActivity(intent);
                 break;
-            case R.id.printer_parent:
+            case R.id.register_layout:
+                Intent register = new Intent(this, DepartmentActivity.class);
+                startActivity(register);
                 break;
             case R.id.appoint_layout:
+                Intent appoint = new Intent(this, AppointmentActivity.class);
+                startActivity(appoint);
                 break;
             default:
                 break;

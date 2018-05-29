@@ -52,6 +52,16 @@
             android:name=".hospital.HospitalDynamicActivity"
             android:screenOrientation="landscape" />
         <activity android:name=".hospital.QuestionActivity" android:screenOrientation="landscape"></activity>
+        <activity android:name=".hospital.AppointmentActivity" android:screenOrientation="landscape"></activity>
+        <activity android:name=".hospital.DepartmentActivity" android:screenOrientation="landscape"></activity>
+
+        <meta-data android:name="design_width" android:value="1920">
+        </meta-data>
+        <meta-data android:name="design_height" android:value="1080">
+        </meta-data>
+
     </application>
+
+
 
 </manifest>

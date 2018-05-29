@@ -1,18 +1,29 @@
 package com.palmaplus.nagrand.api_demo.hospital;
 
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.baidu.aip.unit.Init;
+import com.baidu.aip.unit.listener.MyListener;
+import com.baidu.android.voicedemo.control.MyRecognizer;
+import com.baidu.android.voicedemo.recognization.ChainRecogListener;
+import com.baidu.android.voicedemo.recognization.CommonRecogParams;
+import com.baidu.android.voicedemo.recognization.RecogResult;
+import com.baidu.android.voicedemo.recognization.online.OnlineRecogParams;
 import com.baidu.tts.sample.control.MySyntherizer;
 import com.palmaplus.nagrand.api_demo.R;
 import com.palmaplus.nagrand.api_demo.utils.Constants;
+import com.palmaplus.nagrand.api_demo.utils.JsonUtil;
 import com.palmaplus.nagrand.core.Types;
 import com.palmaplus.nagrand.data.FeatureCollection;
 import com.palmaplus.nagrand.easyapi.LBSManager;
@@ -31,6 +42,9 @@ import java.util.List;
 
 public class HospitalDynamicActivity extends AppCompatActivity {
 
+    private Button voice_button;
+    private int voiceState = 0;
+
     private MapView mapView;
     private Map map;
     protected LBSManager lbsManager;
@@ -38,7 +52,13 @@ public class HospitalDynamicActivity extends AppCompatActivity {
     protected ImageOverlay endOverlay;
     private int state = 0;
     private boolean isVoice;
+    private boolean isSpeaking;
     private double[] end;
+    private long floorID;
+
+    protected CommonRecogParams apiParams;
+    private ChainRecogListener listener;
+    protected MyRecognizer myRecognizer;
 
     MySyntherizer syntherizer; // 语音播报
 
@@ -71,6 +91,44 @@ public class HospitalDynamicActivity extends AppCompatActivity {
     }
 
     private void init() {
+        listener = new ChainRecogListener();
+        listener.addListener(new MyListener(handler) {
+            @Override
+            public void onAsrFinalResult(String[] results, RecogResult recogResult) {
+                String voice = results[0];
+                try {
+                    double[] a = null;
+//                    double[] a = JsonUtil.jsonToMap().get(voice);
+//                    Log.i("FCS", "--------onAsrFinalResult------------------" + Arrays.toString(a));
+                    Log.i("FCS", "--------onAsrFinalResult------------------" + voice);
+//                    if (a == null) {
+//                        syntherizer.speak("没有这个目的地:" + voice);
+////                        Toast.makeText(HospitalDynamicActivity.this, "没有这个目的地:" + voice, Toast.LENGTH_LONG).show();
+//                        return;
+//                    }
+                    if (voice.contains("一楼")) {
+                        a = new double[]{1.3530982926961768E7, 3657410.412079565};
+                        floorID = 305092L;
+                    } else if (voice.contains("二楼")) {
+                        a = new double[]{1.353097812613774E7, 3657372.8435779065};
+                        floorID = 305342L;
+                    } else if (voice.contains("三楼")) {
+                        a = new double[]{1.3530969732158262E7, 3657347.6163096186};
+                        floorID = 305571L;
+                    }
+
+                    end = a;
+                    isVoice = true;
+                    performclick();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        myRecognizer = new MyRecognizer(this, listener);
+        apiParams = getApiParams();
+
         syntherizer = Init.synthesizer;
     }
 
@@ -96,6 +154,26 @@ public class HospitalDynamicActivity extends AppCompatActivity {
     }
 
     private void initView() {
+
+        voice_button = (Button) findViewById(R.id.voice_button);
+        voice_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(HospitalDynamicActivity.this);
+
+                java.util.Map<String, Object> params = apiParams.fetch(sp);  // params可以手动填入
+                if (voiceState == 0) {
+                    myRecognizer.start(params);
+                    Log.i("FCS", "--------myRecognizer.start(params);------------------");
+                    voiceState = 1;
+                } else {
+                    myRecognizer.stop();
+                    Log.i("FCS", "--------myRecognizer.stop();------------------");
+                    voiceState = 0;
+                }
+            }
+        });
+
         // 获取MapView
         mapView = (MapView) findViewById(R.id.mapView);
         // 通过MapView获取Map对象，并且根据MapID渲染地图
@@ -130,7 +208,7 @@ public class HospitalDynamicActivity extends AppCompatActivity {
                         // 设置点击的区域为起点
 //                        startOverlay.init(new double[] { point.x, point.y });
 //                        startOverlay.mFloorId = map.getFloorId();
-                        Log.e("FCS", "--------onSingleTap------------------  " + point.x +"  --y--  "+point.y+" --floor--  "+map.getFloorId());
+                        Log.e("FCS", "--------onSingleTap------------------  " + point.x + "  --y--  " + point.y + " --floor--  " + map.getFloorId());
                         startOverlay.init(new double[]{1.353094773320948E7, 3657367.3479511663});
                         // 设置点击所在的楼层为终点
                         startOverlay.mFloorId = 305092L;
@@ -148,13 +226,14 @@ public class HospitalDynamicActivity extends AppCompatActivity {
                         if (isVoice) {
                             endOverlay.init(end);
                             isVoice = false;
+                            // 设置点击所在的楼层为终点
+                            endOverlay.mFloorId = floorID;
                         } else {
                             endOverlay.init(new double[]{point.x, point.y});
-
+                            // 设置点击所在的楼层为终点
+                            endOverlay.mFloorId = map.getFloorId();
                         }
 
-                        // 设置点击所在的楼层为终点
-                        endOverlay.mFloorId = map.getFloorId();
                         // 开始导航
                         lbsManager.navigateFromPoint(
                                 new Coordinate(startOverlay.getGeoCoordinate()[0], startOverlay.getGeoCoordinate()[1]),
@@ -184,8 +263,11 @@ public class HospitalDynamicActivity extends AppCompatActivity {
                 for (int i = 0; i < allStepInfo.length; i++) {
                     steps.add(String.format("直行%.2f米，%s", allStepInfo[i].mLength, allStepInfo[i].mActionName));
                 }
+                if (!isSpeaking) {
+                    isSpeaking = true;
+                    syntherizer.speak(steps.toString());
+                }
 
-//                syntherizer.speak( steps.toString() );
                 Log.e("FCS", "--------onNavigateComplete------------------" + steps.toString());
             }
 
@@ -203,11 +285,14 @@ public class HospitalDynamicActivity extends AppCompatActivity {
         super.onDestroy();
         // 销毁地图
         mapView.drop();
+
+        syntherizer.release();
+        myRecognizer.release();
     }
 
     @Override
     public void onBackPressed() {
-
+        syntherizer.stop();
         super.onBackPressed();
     }
 
@@ -230,6 +315,10 @@ public class HospitalDynamicActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    protected CommonRecogParams getApiParams() {
+        return new OnlineRecogParams(this);
     }
 
 }
