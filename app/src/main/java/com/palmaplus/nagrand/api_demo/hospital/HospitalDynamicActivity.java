@@ -17,6 +17,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -63,18 +65,30 @@ public class HospitalDynamicActivity extends AppCompatActivity {
     private FloorAdapter floorAdapter;
     private RecyclerView floor_recycle;
     private TextView floor_txt;
-    private Button voice_button;
+    //    private Button voice_button;
     private int voiceState = 0;
+
+    private TextView dymicTxt;
+    private ImageView dymicImg;
+    private TextView dymic_phone;
+    private TextView dymic_back;
+
+
+    private TextView ennd_position,ennd_lenth,ennd_time;
+    private LinearLayout start_layout;
+    private LinearLayout end_layout;
 
     private MapView mapView;
     private Map map;
     protected LBSManager lbsManager;
+    private int lbsLength;
     protected ImageOverlay startOverlay;
     protected ImageOverlay endOverlay;
     private int state = 0;
     private boolean isVoice;
     private boolean isSpeaking;
     private double[] end;
+    private String endVoice;
     private long floorID;
 
     protected CommonRecogParams apiParams;
@@ -92,6 +106,30 @@ public class HospitalDynamicActivity extends AppCompatActivity {
                     break;
                 case 2:
                     break;
+                case 3:
+                    dymicImg.setImageResource(R.mipmap.dymic2);
+                    dymicTxt.setText("点击停止导航");
+                    dymic_phone.setVisibility(View.VISIBLE);
+                    ennd_lenth.setText("距离："+lbsLength+"米");
+                    ennd_time.setText("耗时："+DataUtil.getTime(lbsLength));
+
+                    start_layout.setVisibility(View.GONE);
+                    end_layout.setVisibility(View.VISIBLE);
+                    break;
+                case 4:
+                    dymicImg.setImageResource(R.mipmap.dymic1);
+                    dymicTxt.setText("点击开始说话");
+                    dymic_phone.setVisibility(View.GONE);
+                    start_layout.setVisibility(View.VISIBLE);
+                    end_layout.setVisibility(View.GONE);
+                    break;
+            }
+        }
+    };Handler mainHandle = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+
             }
         }
     };
@@ -171,7 +209,7 @@ public class HospitalDynamicActivity extends AppCompatActivity {
         // appId appKey secretKey 网站上您申请的应用获取。注意使用离线合成功能的话，需要应用中填写您app的包名。包名在build.gradle中获取。
         InitConfig initConfig = new InitConfig(appId, appKey, secretKey, ttsMode, params, listener);
 
-        Init.synthesizer = NonBlockSyntherizer.getInstance(this, initConfig, handler);
+        Init.synthesizer = NonBlockSyntherizer.getInstance(this, initConfig, mainHandle);
     }
 
     protected String appId = "11222818";
@@ -189,10 +227,11 @@ public class HospitalDynamicActivity extends AppCompatActivity {
         initialTts();
 
         listener = new ChainRecogListener();
-        listener.addListener(new MyListener(handler) {
+        listener.addListener(new MyListener(mainHandle) {
             @Override
             public void onAsrFinalResult(String[] results, RecogResult recogResult) {
                 String voice = results[0];
+
                 try {
                     double[] a = null;
 //                    double[] a = JsonUtil.jsonToMap().get(voice);
@@ -212,15 +251,42 @@ public class HospitalDynamicActivity extends AppCompatActivity {
                     } else if (voice.contains("三楼")) {
                         a = new double[]{1.3530969732158262E7, 3657347.6163096186};
                         floorID = 305571L;
+                    } else if (voice.contains("四楼")) {
+                        a = new double[]{1.3530978711370476E7, 3657365.7866325825};
+                        floorID = 305797L;
+                    } else if (voice.contains("五楼")) {
+                        a = new double[]{1.3530954505519342E7, 3657405.488416152};
+                        floorID = 306021L;
                     }
 
-                    end = a;
-                    isVoice = true;
-                    performclick();
+                    if(a !=null){
+                        end = a;
+                        isVoice = true;
+                        endVoice = voice;
+                        performclick();
+                    }else {
+                        syntherizer.speak("未识别到目的地");
+                        Message message = handler.obtainMessage(4);
+                        handler.sendMessage(message);
+
+                        voiceState = 0;
+                    }
+
 
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            }
+
+            @Override
+            public void onAsrFinishError(int errorCode, int subErrorCode, String errorMessage, String descMessage) {
+                super.onAsrFinishError(errorCode, subErrorCode, errorMessage, descMessage);
+
+                syntherizer.speak("未识别到目的地");
+                Message message = handler.obtainMessage(4);
+                handler.sendMessage(message);
+
+                voiceState = 0;
             }
         });
         myRecognizer = new MyRecognizer(this, listener);
@@ -252,13 +318,42 @@ public class HospitalDynamicActivity extends AppCompatActivity {
 
     private void initView() {
 
+        start_layout = (LinearLayout) findViewById(R.id.start_layout);
+        end_layout = (LinearLayout) findViewById(R.id.end_layout);
+        ennd_position = (TextView) findViewById(R.id.ennd_position);
+        ennd_lenth = (TextView) findViewById(R.id.ennd_lenth);
+        ennd_time = (TextView) findViewById(R.id.ennd_time);
+
+        dymicTxt = (TextView) findViewById(R.id.dymic_txt);
+        dymicImg = (ImageView) findViewById(R.id.dymic_img);
+        dymicImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                imgClick();
+            }
+        });
+        dymic_phone = (TextView) findViewById(R.id.dymic_phone);
+        dymic_phone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDia();
+            }
+        });
+        dymic_back = (TextView) findViewById(R.id.dymic_back);
+        dymic_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
+
         floor_txt = (TextView) findViewById(R.id.floor_txt);
         floor_txt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(floor_recycle.getVisibility() == View.GONE){
+                if (floor_recycle.getVisibility() == View.GONE) {
                     floor_recycle.setVisibility(View.VISIBLE);
-                }else {
+                } else {
                     floor_recycle.setVisibility(View.GONE);
                 }
             }
@@ -272,34 +367,13 @@ public class HospitalDynamicActivity extends AppCompatActivity {
         floorAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                if(TextUtils.equals(floor_txt.getText().toString(),floorBeans.get(position).getFloorName())){
+                if (TextUtils.equals(floor_txt.getText().toString(), floorBeans.get(position).getFloorName())) {
                     return;
                 }
 
                 floor_recycle.setVisibility(View.GONE);
                 floor_txt.setText(floorBeans.get(position).getFloorName());
                 map.switchMapWithID(floorBeans.get(position).getFloorID());
-            }
-        });
-
-
-        voice_button = (Button) findViewById(R.id.voice_button);
-        voice_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(HospitalDynamicActivity.this);
-
-                java.util.Map<String, Object> params = apiParams.fetch(sp);  // params可以手动填入
-                if (voiceState == 0) {
-                    myRecognizer.start(params);
-                    Log.i("FCS", "--------myRecognizer.start(params);------------------");
-                    voiceState = 1;
-                } else {
-                    myRecognizer.stop();
-                    Log.i("FCS", "--------myRecognizer.stop();------------------");
-                    voiceState = 0;
-                }
-
             }
         });
 
@@ -322,6 +396,49 @@ public class HospitalDynamicActivity extends AppCompatActivity {
         map.getSwitch().setVisibility(View.GONE);
     }
 
+    private void imgClick() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(HospitalDynamicActivity.this);
+        java.util.Map<String, Object> params = apiParams.fetch(sp);  // params可以手动填入
+        if (voiceState == 0) {
+            Log.i("FCS", "--------myRecognizer.start(params);------------------");
+            voiceState = 1;
+            dymicImg.setImageResource(R.mipmap.dymic3);
+            dymicTxt.setText("停止说话，开始识别");
+            dymic_phone.setVisibility(View.GONE);
+            myRecognizer.start(params);
+        } else if (voiceState == 1) {
+            Log.i("FCS", "--------myRecognizer.stop();------------------");
+            voiceState = 0;
+            myRecognizer.stop();
+        } else if (voiceState == 2) {
+            if (isSpeaking) {
+                syntherizer.stop();
+                isSpeaking = false;
+            }
+
+            if (lbsManager != null && lbsManager.getNaviLayer() != null) {
+                lbsManager.getNaviLayer().clearFeatures();
+            }
+            map.switchMapWithID(305092L);
+            floor_txt.setText("F1");
+            performclick();
+            Log.i("FCS", "--------myRecognizer.stop();------------------");
+            voiceState = 0;
+            dymicTxt.setText("点击开始说话");
+            dymic_phone.setVisibility(View.GONE);
+            dymicImg.setImageResource(R.mipmap.dymic1);
+            start_layout.setVisibility(View.VISIBLE);
+            end_layout.setVisibility(View.GONE);
+        }
+        // 刷新Overlay
+        mapView.getOverlayController().refresh();
+    }
+
+    private void showDia() {
+        CustomDialog dialog = new CustomDialog(this);
+        dialog.show();
+    }
+
     private void initListener() {
         // 设置地图点击事件
         mapView.setOnSingleTapListener(new OnSingleTapListener() {
@@ -333,10 +450,10 @@ public class HospitalDynamicActivity extends AppCompatActivity {
                 switch (state) {
                     case 0:
                         // 清除地图上的导航线
-                        if(lbsManager!=null && lbsManager.getNaviLayer()!=null){
+                        if (lbsManager != null && lbsManager.getNaviLayer() != null) {
                             lbsManager.getNaviLayer().clearFeatures();
                         }
-                        // 设置点击的区域为起点
+//                        // 设置点击的区域为起点
 //                        startOverlay.init(new double[] { point.x, point.y });
 //                        startOverlay.mFloorId = map.getFloorId();
                         Log.e("FCS", "--------onSingleTap------------------  " + point.x + "  --y--  " + point.y + " --floor--  " + map.getFloorId());
@@ -359,10 +476,12 @@ public class HospitalDynamicActivity extends AppCompatActivity {
                             isVoice = false;
                             // 设置点击所在的楼层为终点
                             endOverlay.mFloorId = floorID;
+                            ennd_position.setText("终点："+endVoice);
                         } else {
                             endOverlay.init(new double[]{point.x, point.y});
                             // 设置点击所在的楼层为终点
                             endOverlay.mFloorId = map.getFloorId();
+                            ennd_position.setText("终点：手动选择");
                         }
 
                         // 开始导航
@@ -386,14 +505,28 @@ public class HospitalDynamicActivity extends AppCompatActivity {
         lbsManager.addOnNavigationListener(new LBSManager.OnNavigationListener() {
             @Override
             public void onNavigateComplete(NavigateManager.NavigateState navigateState, FeatureCollection featureCollection) {
+                if (state == 0) {
+                    return;
+                }
+
+
+                voiceState = 2;
+
                 // 如果导航成功，就重置导航状态
                 state = 0;
                 // 如果导航成功，则获取所有的分段导航的信息
+                lbsLength = 0 ;
                 final StepInfo[] allStepInfo = lbsManager.navigateManager().getAllStepInfo();
                 List<String> steps = new ArrayList<>();
                 for (int i = 0; i < allStepInfo.length; i++) {
-                    steps.add(String.format("直行%.2f米，%s", allStepInfo[i].mLength, allStepInfo[i].mActionName));
+                    steps.add(DataUtil.getFloorName(allStepInfo[i].mFloorId) + String.format("直行%.2f米，%s", allStepInfo[i].mLength, allStepInfo[i].mActionName));
+
+                    lbsLength += allStepInfo[i].mLength;
                 }
+
+                Message message = handler.obtainMessage(3);
+                handler.sendMessage(message);
+
                 if (!isSpeaking) {
                     isSpeaking = true;
                     syntherizer.speak(steps.toString());
@@ -405,6 +538,10 @@ public class HospitalDynamicActivity extends AppCompatActivity {
             @Override
             public void onNavigateError(NavigateManager.NavigateState navigateState) {
                 state = 0;
+                Message message = handler.obtainMessage(4);
+                handler.sendMessage(message);
+
+                voiceState = 0;
             }
         });
 

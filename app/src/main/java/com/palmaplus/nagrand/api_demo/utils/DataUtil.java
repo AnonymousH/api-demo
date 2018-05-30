@@ -71,4 +71,35 @@ public class DataUtil {
         return floorBeans;
     }
 
+    public static String  getFloorName(long floorID){
+
+        String name ="";
+        if(floorID == 304929L){
+           name = "地下一楼";
+        }else if(floorID == 305092L){
+            name = "一楼";
+        }else if(floorID == 305342L){
+            name = "二楼";
+        }else if(floorID == 305571L){
+            name = "三楼";
+        }else if(floorID == 305797L){
+            name = "四楼";
+        }else if(floorID == 306021L){
+            name = "五楼";
+        }
+
+        return name;
+    }
+
+    public static String getTime(int lbsLength) {
+
+        int min = lbsLength/60;
+        int miao = lbsLength%60;
+
+        if (min>0){
+            return min+"分"+miao+"秒";
+        }else {
+            return miao+"秒";
+        }
+    }
 }

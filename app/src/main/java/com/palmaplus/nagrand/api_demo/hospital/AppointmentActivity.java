@@ -82,7 +82,7 @@ public class AppointmentActivity extends AutoLayoutActivity {
         date_select_layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showPop();
+//                showPop();
             }
         });
         icon_main  = (ImageView) findViewById(R.id.icon_main);
@@ -150,15 +150,5 @@ public class AppointmentActivity extends AutoLayoutActivity {
 
         PopWindowUtil.getInstance().makePopupWindow(this,date_select_layout,view , Color.parseColor("0x00ffffff"));
 
-//        popupWindow = new PopupWindow(view, LinearLayout.LayoutParams.MATCH_PARENT,
-//                LinearLayout.LayoutParams.WRAP_CONTENT);
-//        popupWindow.setFocusable(true);
-//        popupWindow.setOutsideTouchable(true);
-//        ColorDrawable cd = new ColorDrawable(0x00ffffff);// 背景颜色全透明
-//        popupWindow.setBackgroundDrawable(cd);
-//        int[] location = new int[2];
-//        date_select_layout.getLocationOnScreen(location);
-////        popupWindow.setAnimationStyle(R.style.style_pop_animation);// 动画效果必须放在showAsDropDown()方法上边，否则无效
-//        popupWindow.showAsDropDown(date_select_layout);
     }
 }

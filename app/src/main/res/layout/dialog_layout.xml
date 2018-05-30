@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="#00000000"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="138px"
+        android:paddingLeft="250px"
+        android:paddingRight="250px"
+        android:paddingBottom="95px"
+        android:background="@drawable/dynamic_bg"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        >
+
+    <ImageView
+        android:layout_width="300px"
+        android:layout_height="300px"
+        android:src="@mipmap/dymic_erwei" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#333333"
+        android:textSize="50px"
+        android:layout_marginTop="20px"
+        android:text="手机扫码 边走边看" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:textColor="#333333"
+        android:layout_marginTop="30px"
+        android:layout_height="wrap_content"
+        android:textSize="36px"
+        android:text="正在打印地图指引" />
+    </LinearLayout>
+</LinearLayout>

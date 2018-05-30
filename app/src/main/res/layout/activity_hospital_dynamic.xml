@@ -1,70 +1,251 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="horizontal"
     tools:context="com.palmaplus.nagrand.api_demo.hospital.HospitalDynamicActivity">
 
-    <com.palmaplus.nagrand.view.MapView
-        android:id="@+id/mapView"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_weight="1">
 
-    <RelativeLayout
-        android:id="@+id/overlay_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"></RelativeLayout>
+        <com.palmaplus.nagrand.view.MapView
+            android:id="@+id/mapView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-    <RelativeLayout
-        android:id="@+id/control_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"></RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/overlay_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"></RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/control_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"></RelativeLayout>
 
 
-    <ImageView
-        android:layout_width="200dp"
-        android:layout_height="100dp"
-        android:layout_gravity="bottom|right"
-        android:scaleType="fitXY"
-        android:src="@mipmap/white" />
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="100dp"
+            android:layout_gravity="bottom|right"
+            android:scaleType="fitXY"
+            android:src="@mipmap/white" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="50px"
-        android:layout_marginLeft="50px"
-        android:background="#000000"
-        android:orientation="vertical">
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/floor_recycle"
-            android:layout_width="150px"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10px"
-            android:background="#FFFFFF"
-            android:visibility="gone"></android.support.v7.widget.RecyclerView>
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="50px"
+            android:layout_marginLeft="50px"
+            android:background="#000000"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/floor_txt"
-            android:layout_width="150px"
-            android:layout_height="75px"
-            android:background="#FFFFFF"
-            android:gravity="center"
-            android:text="F1"
-            android:textSize="44px" />
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/floor_recycle"
+                android:layout_width="150px"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10px"
+                android:background="#FFFFFF"
+                android:visibility="gone"></android.support.v7.widget.RecyclerView>
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/floor_txt"
+                android:layout_width="150px"
+                android:layout_height="75px"
+                android:background="#FFFFFF"
+                android:gravity="center"
+                android:text="F1"
+                android:textSize="44px" />
 
-    <Button
-        android:id="@+id/voice_button"
-        android:layout_width="150px"
-        android:layout_height="75px"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="50px"
-        android:layout_marginLeft="220px"
-        android:text="语音识别"
-        android:textSize="44px" />
+        </LinearLayout>
 
-</FrameLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="200px"
+            android:layout_gravity="bottom|center_horizontal"
+            android:gravity="center_vertical"
+            android:paddingRight="100px"
+            android:paddingLeft="100px"
+            android:layout_marginBottom="30px"
+            android:background="@drawable/dy_txt_bg">
+
+            <LinearLayout
+                android:id="@+id/start_layout"
+                android:visibility="visible"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="起点：一楼大厅"
+                    android:textColor="#FFFFFF"
+                    android:textSize="36px" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="终点：请说出目的地"
+                    android:textColor="#FFFFFF"
+                    android:textSize="36px" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/end_layout"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFF"
+                    android:textSize="36px"
+                    android:text="正在为您模拟导航"
+                    />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    >
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="起点：一楼大厅"
+                            android:textColor="#FFFFFF"
+                            android:textSize="36px" />
+
+                        <TextView
+                            android:id="@+id/ennd_position"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="终点："
+                            android:textColor="#FFFFFF"
+                            android:textSize="36px" />
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_marginLeft="80px"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/ennd_lenth"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="距离："
+                            android:textColor="#FFFFFF"
+                            android:textSize="36px" />
+
+                        <TextView
+                            android:id="@+id/ennd_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="耗时："
+                            android:textColor="#FFFFFF"
+                            android:textSize="36px" />
+
+
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </FrameLayout>
+
+    <RelativeLayout
+        android:layout_width="500px"
+        android:layout_height="match_parent"
+        android:background="#EEEEEE">
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="400px"
+            android:layout_height="100px"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="31px"
+            android:src="@mipmap/dynmaiclogo" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/logo"
+            android:gravity="center_horizontal"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="150px"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/dymic_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="点击开始说话"
+                android:textColor="#333333"
+                android:textSize="40px" />
+
+            <ImageView
+                android:id="@+id/dymic_img"
+                android:layout_width="250px"
+                android:layout_height="250px"
+                android:layout_marginTop="20px"
+                android:src="@mipmap/dymic1" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="80px"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/dymic_phone"
+                android:layout_width="240px"
+                android:layout_height="80px"
+                android:layout_marginBottom="40px"
+                android:background="@drawable/shape_department"
+                android:gravity="center"
+                android:text="手机导航"
+                android:textColor="#307FE2"
+                android:textSize="40px"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/dymic_back"
+                android:layout_width="240px"
+                android:layout_height="80px"
+                android:background="@drawable/shape_department"
+                android:gravity="center"
+                android:text="返回首页"
+                android:textColor="#307FE2"
+                android:textSize="40px" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+</LinearLayout>

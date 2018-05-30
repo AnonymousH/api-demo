@@ -18,6 +18,9 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.baidu.aip.unit.Init;
 import com.baidu.aip.unit.TLAPIService;
@@ -38,6 +41,7 @@ import com.baidu.tts.sample.control.InitConfig;
 import com.baidu.tts.sample.control.MySyntherizer;
 import com.baidu.tts.sample.control.NonBlockSyntherizer;
 import com.baidu.tts.sample.listener.MessageListener;
+import com.bumptech.glide.Glide;
 import com.palmaplus.nagrand.api_demo.R;
 import com.ping.chatdemo.adapter.ChatAdapter;
 import com.ping.chatdemo.dao.MsgDaoUtil;
@@ -54,20 +58,20 @@ import java.util.Map;
 
 public class QuestionActivity extends AppCompatActivity {
 
-
-
-    static final int click_to_error_or_final = 1;
-
     private List<Msg> mMsgs;
     private MsgDaoUtil mMsgDaoUtil;
     private ChatAdapter mAdapter;
     SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
 
-
     RecyclerView mRvChatList;
-    EditText mEtContent;
-    Button mBtSend;
-    Button bt_voice_send;
+    ImageView display;
+    ImageView logo;
+    TextView hint;
+    TextView dymic_back;
+
+    ImageView saybutton;
+
+    ImageView returnview;
 
     Handler handler = new Handler(){
         @Override
@@ -84,11 +88,13 @@ public class QuestionActivity extends AppCompatActivity {
         }
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question);
 //        ButterKnife.bind(this);
+
 
 
         TLAPIService.getInstance().init(this);
@@ -119,7 +125,7 @@ public class QuestionActivity extends AppCompatActivity {
                 super.onScrolled(recyclerView, dx, dy);
                 if (dy < -10) {
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(mEtContent.getWindowToken(), 0);
+//                    imm.hideSoftInputFromWindow(mEtContent.getWindowToken(), 0);
                 }
             }
         });
@@ -139,50 +145,73 @@ public class QuestionActivity extends AppCompatActivity {
     private void initView()
     {
         mRvChatList = (RecyclerView)findViewById(R.id.rv_chatList);
-        mEtContent = (EditText)findViewById(R.id.et_content);
-        mBtSend = (Button)findViewById(R.id.bt_send);
-        mBtSend.setOnClickListener(new View.OnClickListener() {
+
+        display = (ImageView)findViewById(R.id.activity_question_img);
+        Glide.with(this).load(R.mipmap.questioning).into(display);
+
+        logo = (ImageView)findViewById(R.id.logo);
+
+        hint = (TextView) findViewById(R.id.lab);
+        dymic_back = (TextView) findViewById(R.id.dymic_back);
+        dymic_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onViewClicked();
+                onBackPressed();
             }
         });
-        bt_voice_send = (Button)findViewById(R.id.bt_voice_send);
 
-        bt_voice_send.setOnClickListener(new View.OnClickListener() {
+        saybutton = (ImageView) findViewById(R.id.speak);
+
+        saybutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onVoiceClicked();
+                say_stop_click();
             }
         });
-
     }
 
-    int viewClick = 0;
-    public void onViewClicked() {
-        String content = mEtContent.getText().toString();
-        viewClick = click_to_error_or_final;
+
+    int click_status = 0;
+    int bot_speaking = 0;
+    private void say_stop_click(){
+        if(click_status == 0){
+            if(bot_speaking == 0){
+                click_status = 1;
+                stopBot();
+                startListen();
+            }else if(bot_speaking == 1){
+                stopBot();
+            }
+        }else if(click_status == 1){
+            click_status = 0;
+            stopListen();
+        }
+    }
+    void startListen(){
+        saybutton.setImageResource(R.mipmap.dymic3);
+        hint.setText("正在说话");
+        myRecognizer.start(params);
+
+    }
+    void stopListen(){
+        saybutton.setImageResource(R.mipmap.dymic1);
+        hint.setText("点击开始说话");
+        myRecognizer.stop();
+    }
+
+    void speak(String text){
+        bot_speaking = 1;
+        for(;;){
+            if(ready == 1){
+                syntherizer.speak(text);
+                break;
+            }
+        }
+    }
+    void stopBot(){
+        bot_speaking = 0;
         syntherizer.stop();
-        stopListen();
-        addMsg(new Msg(null, content, Msg.TYPE_PHONE, df.format(new Date())));
-        answer(content);
-        mEtContent.setText("");
     }
-
-    static final int status_saying = 1;
-    static final int status_no_saying = 0;
-    static final int status_bot_saying = 2;
-    int say_status = status_no_saying;
-
-
-
-    public void onVoiceClicked() {
-        syntherizer.stop();
-        Log.w("yuyin","in click kaishi luyin : " + islitening);
-        listen();
-        viewClick = 0;
-    }
-
     private void answer(String question){
         TLAPIService.getInstance().communicate(new OnResultListener<TLResponse>() {
             @Override
@@ -190,13 +219,8 @@ public class QuestionActivity extends AppCompatActivity {
                 String text = result.getText();
                 String url = result.getUrl();
                 String image = result.getImage();
-                addMsg(new Msg(null, text, Msg.TYPE_BLE, df.format(new Date())));
-                for(;;){
-                    if(ready == 1){
-                        syntherizer.speak(text);
-                        break;
-                    }
-                }
+                addMsg(new Msg(null, text + url + image, Msg.TYPE_BLE, df.format(new Date())));
+                speak(text);
             }
 
             @Override
@@ -230,14 +254,12 @@ public class QuestionActivity extends AppCompatActivity {
     protected Map<String,Object> params;
 
 
-    IRecogListener listener0;
+
     //识别引擎初始化
     protected void initRecog() {
-//        listener0 = new MyListener(handler);
         listener = new ChainRecogListener();
         listener.addListener(new MyListener(handler));
         myRecognizer = new MyRecognizer(this, listener);
-//        myRecognizer.registerListener(listener);
         apiParams = getApiParams();
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         params = apiParams.fetch(sp);
@@ -245,33 +267,6 @@ public class QuestionActivity extends AppCompatActivity {
     protected CommonRecogParams getApiParams() {
         return new OnlineRecogParams(this);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     private void initPermission() {
         String[] permissions = {
@@ -297,7 +292,6 @@ public class QuestionActivity extends AppCompatActivity {
         }
 
     }
-
 
 
     class MyListener extends StatusRecogListener implements IRecogListener {
@@ -352,12 +346,9 @@ public class QuestionActivity extends AppCompatActivity {
             sendMessage(message, status, true);
             Log.w("yuyin",message);
 
-
-//            if(viewClick != click_to_error_or_final) {
-            stopListen();
             addMsg(new Msg(null, results[0], Msg.TYPE_PHONE, df.format(new Date())));
+            stopListen();
             answer(results[0]);
-//            }
 
         }
 
@@ -374,8 +365,11 @@ public class QuestionActivity extends AppCompatActivity {
             sendMessage(message, status, true);
             speechEndTime = 0;
             Log.w("yuyin","in error kaishi luyin");
-            if(viewClick != click_to_error_or_final)
-                myRecognizer.start(params);
+            if(click_status == 1){
+                startListen();
+            }else if(click_status == 0){
+
+            }
         }
 
         @Override
@@ -464,11 +458,7 @@ public class QuestionActivity extends AppCompatActivity {
         listener.setCallback(new MessageListener.FinishCallback() {
             @Override
             public void callback() {
-                Log.e("test","callback");
-                Log.w("yuyin","int call back kaishi luyin");
-                viewClick = 0;
-                listen();
-                islitening = true;
+                bot_speaking = 0;
             }
 
         });
@@ -481,18 +471,7 @@ public class QuestionActivity extends AppCompatActivity {
 
         Init.synthesizer = NonBlockSyntherizer.getInstance(this,initConfig,mainHandler);
     }
-    boolean islitening = false;
-    void listen(){
-        if(!islitening) {
-            myRecognizer.start(params);
-            islitening = true;
-        }
-    }
-    void stopListen(){
-        myRecognizer.cancel();
-        islitening = false;
-    }
-    int i = 0;
+
     int ready = 0;
     Handler mainHandler = new Handler()
     {
@@ -501,8 +480,7 @@ public class QuestionActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             if (msg.what == 2){
-                if(i == 0 ) syntherizer.speak("请问有什么问题需要咨询?聊聊天也行啊!");
-                Log.w("speak", ""+(++i));
+                syntherizer.speak("请问有什么问题需要咨询");
                 ready = 1;
             }
 

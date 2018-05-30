@@ -174,7 +174,7 @@ public class MyListener extends StatusRecogListener implements IRecogListener {
             msg.arg2 = 1;
         }
         msg.obj = message + "\n";
-        handler.sendMessage(msg);
+//        handler.sendMessage(msg);
         Log.w("asr", message);
     }
 }

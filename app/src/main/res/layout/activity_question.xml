@@ -1,52 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
+    android:orientation="horizontal"
     android:padding="5dp"
-    tools:context="com.palmaplus.nagrand.api_demo.hospital.QuestionActivity">
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_chatList"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/linearLayout">
-
-    </android.support.v7.widget.RecyclerView>
+    >
 
     <LinearLayout
-        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/linearLayout">
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_weight="6"
-            android:layout_height="50dp">
-            <EditText
-                android:id="@+id/et_content"
-                android:hint="请输入文字..."
-                android:textSize="15dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-        </LinearLayout>
+        android:orientation="vertical"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@mipmap/bg">
 
-        <Button
-            android:id="@+id/bt_voice_send"
-            android:padding="10dp"
-            android:textSize="25dp"
-            android:text="停止"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <Button
-            android:id="@+id/bt_send"
-            android:padding="10dp"
-            android:textSize="25dp"
-            android:text="发送"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+        <ImageView
+            android:id="@+id/activity_question_img"
+            android:layout_width="match_parent"
+            android:layout_height="42px"
+            android:layout_marginTop="0dp"
+            android:scaleType="fitXY" />
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_chatList"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/linearLayout">
+
+        </android.support.v7.widget.RecyclerView>
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="6">
+
+                <EditText
+                    android:id="@+id/et_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="请输入文字..."
+                    android:textSize="15dp" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/bt_voice_send"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="停止"
+                android:textSize="25dp" />
+
+            <Button
+                android:id="@+id/bt_send"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="发送"
+                android:textSize="25dp" />
+        </LinearLayout>
     </LinearLayout>
 
-</RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="500px"
+        android:layout_height="match_parent"
+        android:background="#EEEEEE">
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="400px"
+            android:layout_height="100px"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="31px"
+            android:src="@mipmap/dynmaiclogo" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/logo"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="150px"
+            android:layout_centerHorizontal="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/lab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="点击开始说话"
+                android:textColor="#333333"
+                android:textSize="40px" />
+
+            <ImageView
+                android:id="@+id/speak"
+                android:layout_width="250px"
+                android:layout_height="250px"
+                android:layout_marginTop="20px"
+                android:src="@mipmap/dymic1" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="80px"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/dymic_phone"
+                android:layout_width="240px"
+                android:layout_height="80px"
+                android:layout_marginBottom="40px"
+                android:visibility="gone"
+                android:background="@drawable/shape_department"
+                android:gravity="center"
+                android:text="手机导航"
+                android:textColor="#307FE2"
+                android:textSize="40px" />
+
+            <TextView
+                android:id="@+id/dymic_back"
+                android:layout_width="240px"
+                android:layout_height="80px"
+                android:background="@drawable/shape_department"
+                android:gravity="center"
+                android:text="返回首页"
+                android:textColor="#307FE2"
+                android:textSize="40px" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>
+
+
+
+
